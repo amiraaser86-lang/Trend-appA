@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة التحكم</title>
+    <style>
+        :root { --main-color: #f1c40f; --bg-color: #1a1a1a; }
+        body { font-family: sans-serif; background-color: var(--bg-color); color: #fff; padding: 20px; }
+        .card { background: #2d2d2d; padding: 20px; margin-bottom: 20px; border-radius: 10px; border-right: 5px solid var(--main-color); }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #444; padding: 12px; text-align: center; }
+        th { background-color: #333; color: var(--main-color); }
+        button { background: var(--main-color); border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card"><h2>بيانات الاتصال</h2><p>http://localhost:3000/files</p><button onclick="copy('http://localhost:3000/files')">نسخ الرابط</button></div>
+    <div class="card"><h2>رفع الملفات</h2><input type="file" id="f"> <button onclick="up()">رفع</button><p id="msg"></p></div>
+    <div class="card"><h3>آخر 20 ملفاً</h3><table><thead><tr><th>اسم</th><th>نوع</th><th>إجراء</th></tr></thead><tbody id="tb"></tbody></table></div>
+    <script>
+        function copy(t){ navigator.clipboard.writeText(t); alert("تم النسخ!"); }
+        async function up(){ const d = new FormData(); d.append('file', document.getElementById('f').files[0]); await fetch('/upload', {method:'POST', body:d}); location.reload(); }
+        async function load(){ const r = await fetch('/files'); const f = await r.json(); document.getElementById('tb').innerHTML = f.slice(-20).map(i => `<tr><td>${i.name}</td><td>${i.type}</td><td><button onclick="copy('${window.location.origin}${i.url}')">نسخ</button></td></tr>`).join(''); }
+        load();
+    </script>
+</body>
+</html>
